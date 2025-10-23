@@ -916,7 +916,8 @@ class RosOperator(Node):
 
     def camera_color_config_callback(self, index, msg):
         self.camera_color_intrinsics[index] = np.array(msg.k).reshape(3, 3)
-        
+        if self.camera_color_extrinsics[index] is not None and not np.array_equal(self.camera_color_extrinsics[index], np.eye(4)):
+            return
         # 使用一次性定时器延迟执行TF查找
         def lookup_tf():
             try:
@@ -938,24 +939,25 @@ class RosOperator(Node):
                     rot = euler_from_quaternion([rot.x, rot.y, rot.z, rot.w])
                     self.camera_color_extrinsics[index] = create_transformation_matrix(trans.x, trans.y, trans.z, rot[0], rot[1], rot[2])
                     # print(f"Successfully got camera_color transform {index}")
+                    # 取消定时器并销毁订阅
+                    # timer.cancel()
+                    self.destroy_subscription(self.camera_color_config_subscriber[index])
                 else:
-                    print(f"Transform not available for camera_color {index}, using identity")
+                    # print(f"Transform not available for camera_color {index}, using identity")
                     self.camera_color_extrinsics[index] = np.eye(4)
                     
             except Exception as e:
-                print(f'Failed to get camera_color transform {index}: {e}, using identity')
+                # print(f'Failed to get camera_color transform {index}: {e}, using identity')
                 self.camera_color_extrinsics[index] = np.eye(4)
-            
-            # 取消定时器并销毁订阅
-            timer.cancel()
-            self.destroy_subscription(self.camera_color_config_subscriber[index])
         
         # 创建一次性定时器
-        timer = self.create_timer(2.0, lookup_tf)
+        lookup_tf()
+        # timer = self.create_timer(2.0, lookup_tf)
 
     def camera_depth_config_callback(self, index, msg):
         self.camera_depth_intrinsics[index] = np.array(msg.k).reshape(3, 3)
-        
+        if self.camera_depth_extrinsics[index] is not None and not np.array_equal(self.camera_depth_extrinsics[index], np.eye(4)):
+            return
         # 使用一次性定时器延迟执行TF查找
         def lookup_tf():
             try:
@@ -978,23 +980,25 @@ class RosOperator(Node):
                     rot = euler_from_quaternion([rot.x, rot.y, rot.z, rot.w])
                     self.camera_depth_extrinsics[index] = create_transformation_matrix(trans.x, trans.y, trans.z, rot[0], rot[1], rot[2])
                     # print(f"Successfully got camera_depth transform {index}")
+                    # 取消定时器并销毁订阅
+                    # timer.cancel()
+                    self.destroy_subscription(self.camera_depth_config_subscriber[index])
                 else:
-                    print(f"Transform not available for camera_depth {index}, using identity")
+                    # print(f"Transform not available for camera_depth {index}, using identity")
                     self.camera_depth_extrinsics[index] = np.eye(4)
                     
             except Exception as e:
-                print(f'Failed to get camera_depth transform {index}: {e}, using identity')
+                # print(f'Failed to get camera_depth transform {index}: {e}, using identity')
                 self.camera_depth_extrinsics[index] = np.eye(4)
-            
-            # 取消定时器并销毁订阅
-            timer.cancel()
-            self.destroy_subscription(self.camera_depth_config_subscriber[index])
         
         # 创建一次性定时器
-        timer = self.create_timer(2.0, lookup_tf)
+        lookup_tf()
+        # timer = self.create_timer(2.0, lookup_tf)
 
     def camera_point_cloud_config_callback(self, index, msg):
         self.camera_point_cloud_intrinsics[index] = np.array(msg.k).reshape(3, 3)
+        if self.camera_point_cloud_extrinsics[index] is not None and not np.array_equal(self.camera_point_cloud_extrinsics[index], np.eye(4)):
+            return
         
         # 使用一次性定时器延迟执行TF查找
         def lookup_tf():
@@ -1018,20 +1022,20 @@ class RosOperator(Node):
                     rot = euler_from_quaternion([rot.x, rot.y, rot.z, rot.w])
                     self.camera_point_cloud_extrinsics[index] = create_transformation_matrix(trans.x, trans.y, trans.z, rot[0], rot[1], rot[2])
                     # print(f"Successfully got camera_point_cloud transform {index}")
+                    # 取消定时器并销毁订阅
+                    # timer.cancel()
+                    self.destroy_subscription(self.camera_point_cloud_config_subscriber[index])
                 else:
-                    print(f"Transform not available for camera_point_cloud {index}, using identity")
+                    # print(f"Transform not available for camera_point_cloud {index}, using identity")
                     self.camera_point_cloud_extrinsics[index] = np.eye(4)
                     
             except Exception as e:
-                print(f'Failed to get camera_point_cloud transform {index}: {e}, using identity')
+                # print(f'Failed to get camera_point_cloud transform {index}: {e}, using identity')
                 self.camera_point_cloud_extrinsics[index] = np.eye(4)
-            
-            # 取消定时器并销毁订阅
-            timer.cancel()
-            self.destroy_subscription(self.camera_point_cloud_config_subscriber[index])
         
         # 创建一次性定时器
-        timer = self.create_timer(2.0, lookup_tf)
+        lookup_tf()
+        # timer = self.create_timer(2.0, lookup_tf)
 
     def interpolation_param(self, positions):
         positions = np.array(positions)
