@@ -1,5 +1,6 @@
 # LeRobot
 Referencing https://github.com/huggingface/lerobot.git, For more details, please refer to this link.
+Data collection method reference: https://github.com/agilexrobotics/data_tools
 ## Installation
 
 LeRobot works with Python 3.10+ and PyTorch 2.2+.
